@@ -17,14 +17,12 @@
 package defrac.intellij.sdk;
 
 import com.google.common.collect.Lists;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkModificator;
 import com.intellij.openapi.projectRoots.SdkTypeId;
 import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
 import com.intellij.openapi.roots.*;
 import com.intellij.openapi.roots.libraries.ui.OrderRoot;
-import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
@@ -207,13 +205,6 @@ public final class DefracSdkUtil {
     }
 
     return new DefracVersion(versionName, location);
-  }
-
-  @NotNull
-  public static ProjectSdksModel getSdkModel(@Nullable final Project project) {
-    final ProjectSdksModel model = new ProjectSdksModel();
-    model.reset(project);
-    return model;
   }
 
   public static boolean isInDefracSdk(@NotNull final PsiElement element) {

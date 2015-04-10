@@ -22,6 +22,7 @@ import com.intellij.openapi.module.JavaModuleType;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleType;
 import defrac.intellij.DefracIcons;
+import defrac.intellij.util.Names;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,10 +33,10 @@ import javax.swing.*;
  *
  */
 public final class DefracFacetType extends FacetType<DefracFacet, DefracFacetConfiguration> {
-  @NotNull @NonNls public static final String TYPE_ID = "DEFRAC";
+  @NotNull @NonNls public static final String TYPE_ID = Names.FACET_TYPE_ID;
 
   public DefracFacetType() {
-    super(DefracFacet.ID, TYPE_ID, "defrac");
+    super(DefracFacet.ID, TYPE_ID, Names.FACET_NAME);
   }
 
   @Override

@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/common/common.iml" filepath="$PROJECT_DIR$/common/common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jps-plugin/defrac-jps-plugin.iml" filepath="$PROJECT_DIR$/jps-plugin/defrac-jps-plugin.iml" />
       <module fileurl="file://$PROJECT_DIR$/defrac-plugin-intellij.iml" filepath="$PROJECT_DIR$/defrac-plugin-intellij.iml" />
     </modules>
   </component>

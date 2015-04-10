@@ -41,7 +41,6 @@ public final class Names {
   @NotNull @NonNls public static final String defrac_annotation_UnsupportedJVM = "defrac.annotation.UnsupportedJVM";
   @NotNull @NonNls public static final String defrac_annotation_UnsupportedWeb = "defrac.annotation.UnsupportedWeb";
 
-
   @NotNull @NonNls public static final String defrac_compiler_macro_Macro = "defrac.compiler.macro.Macro";
   @NotNull @NonNls public static final String defrac_compiler_macro_Parameter = "defrac.compiler.macro.Parameter";
   @NotNull @NonNls public static final String defrac_compiler_macro_MethodBody = "defrac.compiler.macro.MethodBody";
@@ -74,6 +73,11 @@ public final class Names {
       defrac_annotation_UnsupportedJVM,
       defrac_annotation_UnsupportedWeb
   );
+
+  @NotNull @NonNls public static final String FACET_TYPE_ID = "DEFRAC";
+  @NotNull @NonNls public static final String FACET_NAME = "defrac";
+
+  @NotNull @NonNls public static final String JVM_PACKAGE_BUILD_TARGET_TYPE_ID = "defrac-jvm-package";
 
   private Names() {}
 }
