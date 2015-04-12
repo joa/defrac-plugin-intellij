@@ -40,6 +40,8 @@
 
   <idea-version since-build="139.225"/>
 
+  <depends>com.intellij.modules.java</depends>
+
   <extensions defaultExtensionNs="com.intellij">
     <annotator language="JAVA" implementationClass="defrac.intellij.annotator.DelegateAnnotator"/>
     <annotator language="JAVA" implementationClass="defrac.intellij.annotator.MacroAnnotator"/>
