@@ -18,12 +18,22 @@ package defrac.intellij.jps;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Sets;
+import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.io.FileUtil;
+import defrac.intellij.DefracBundle;
 import defrac.intellij.jps.model.JpsDefracModuleExtension;
+import defrac.intellij.jps.model.JpsDefracSdkProperties;
+import defrac.intellij.jps.model.JpsDefracSdkType;
+import defrac.intellij.sdk.DefracVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.jps.incremental.CompileContext;
+import org.jetbrains.jps.incremental.messages.BuildMessage;
+import org.jetbrains.jps.incremental.messages.CompilerMessage;
 import org.jetbrains.jps.model.JpsProject;
+import org.jetbrains.jps.model.JpsSimpleElement;
 import org.jetbrains.jps.model.java.JpsJavaExtensionService;
+import org.jetbrains.jps.model.library.sdk.JpsSdk;
 import org.jetbrains.jps.model.module.JpsModule;
 import org.jetbrains.jps.model.serialization.JpsModelSerializationDataService;
 
@@ -94,6 +104,145 @@ public final class DefracJpsUtil {
   private static Set<JpsModule> getRuntimeModuleDeps(JpsModule rootModule) {
     return JpsJavaExtensionService.getInstance().enumerateDependencies(
         Collections.singletonList(rootModule)).recursively().runtimeOnly().getModules();
+  }
+
+  @Nullable
+  public static File getDefracExecutable(@NotNull final JpsModule module,
+                                         @Nullable final CompileContext context,
+                                         @NotNull final String builderName) {
+    final JpsSdk<JpsSimpleElement<JpsDefracSdkProperties>> sdk = module.getSdk(JpsDefracSdkType.INSTANCE);
+
+    if(sdk == null) {
+      if(context != null) {
+        context.processMessage(new CompilerMessage(builderName, BuildMessage.Kind.ERROR,
+            DefracBundle.message("jps.error.noSDK", module.getName())));
+      }
+
+      return null;
+    }
+
+    final File executable = new File(sdk.getHomePath(), nameOfExecutable());
+
+    if(!executable.exists()) {
+      if(context != null) {
+        context.processMessage(new CompilerMessage(builderName, BuildMessage.Kind.ERROR,
+            DefracBundle.message("jps.error.cannotFindExecutable", sdk.getHomePath(), nameOfExecutable())));
+      }
+
+      return null;
+    }
+
+    if(!executable.canExecute()) {
+      if(context != null) {
+        context.processMessage(new CompilerMessage(builderName, BuildMessage.Kind.ERROR,
+            DefracBundle.message("jps.error.cannotExecute", executable.getAbsolutePath())));
+      }
+
+      return null;
+    }
+
+    return executable;
+  }
+
+  @NotNull
+  public static String nameOfExecutable() {
+    return "defrac"+(SystemInfo.isWindows ? ".bat" : "");
+  }
+
+  @Nullable
+  public static DefracVersion getDefracVersion(@NotNull final JpsModule module,
+                                               @Nullable final CompileContext context,
+                                               @NotNull final String builderName) {
+    final JpsSdk<JpsSimpleElement<JpsDefracSdkProperties>> sdk = module.getSdk(JpsDefracSdkType.INSTANCE);
+
+    if(sdk == null) {
+      if(context != null) {
+        context.processMessage(new CompilerMessage(builderName, BuildMessage.Kind.ERROR,
+            DefracBundle.message("jps.error.noSDK", module.getName())));
+      }
+
+      return null;
+    }
+
+    return getDefracVersion(sdk, context, builderName);
+  }
+
+  @Nullable
+  public static DefracVersion getDefracVersion(@NotNull final JpsSdk<JpsSimpleElement<JpsDefracSdkProperties>> sdk,
+                                               @Nullable final CompileContext context,
+                                               @NotNull final String builderName) {
+    final JpsDefracSdkProperties sdkProperties = sdk.getSdkProperties().getData();
+    final String versionName = sdkProperties.getDefracVersionName();
+
+    if(isNullOrEmpty(versionName)) {
+      if(context != null) {
+        context.processMessage(new CompilerMessage(builderName, BuildMessage.Kind.ERROR,
+            DefracBundle.message("jps.error.cannotParseSDK", sdk.getParent().getName())));
+      }
+
+      return null;
+    }
+
+    final DefracVersion result = findVersion(sdk, context, versionName, builderName);
+    if(result == null) {
+      if(context != null) {
+        context.processMessage(new CompilerMessage(builderName, BuildMessage.Kind.ERROR,
+            "Cannot parse SDK '" + sdk.getParent().getName() +
+                "': unknown target " + versionName));
+      }
+
+      return null;
+    }
+
+    return result;
+  }
+
+  @Nullable
+  public static DefracVersion findVersion(@NotNull final JpsSdk<JpsSimpleElement<JpsDefracSdkProperties>> sdk,
+                                          @Nullable final CompileContext context,
+                                          @NotNull final String versionName,
+                                          @NotNull final String builderName) {
+    if(isNullOrEmpty(versionName)) {
+      if(context != null) {
+        context.processMessage(new CompilerMessage(builderName, BuildMessage.Kind.ERROR,
+            DefracBundle.message("jps.error.emptyVersion")));
+      }
+    }
+
+    final File sdkDir = new File(sdk.getHomePath(), "sdk");
+
+    if(!sdkDir.isDirectory()) {
+      if(context != null) {
+        context.processMessage(new CompilerMessage(builderName, BuildMessage.Kind.ERROR,
+            DefracBundle.message("jps.error.noSdkDir")));
+      }
+    }
+
+    final File location = new File(sdkDir, DefracVersion.mapToCurrent(versionName));
+
+    if(!location.isDirectory()) {
+      if(context != null) {
+        context.processMessage(new CompilerMessage(builderName, BuildMessage.Kind.ERROR,
+            DefracBundle.message("jps.error.noSuchVersion", versionName)));
+      }
+    }
+
+    return new DefracVersion(versionName, location);
+  }
+
+  @Nullable
+  public static File createDirIfNotExist(@NotNull File dir,
+                                         @NotNull CompileContext context,
+                                         @NotNull String compilerName) {
+    if(!dir.exists()) {
+      if(!dir.mkdirs()) {
+        context.processMessage(new CompilerMessage(compilerName, BuildMessage.Kind.ERROR,
+            DefracBundle.message("jps.error.cannotMkdirs", dir.getPath())));
+        return null;
+      }
+    }
+
+    return dir;
   }
 
   private DefracJpsUtil() {}

@@ -17,12 +17,13 @@
 package defrac.intellij.jps;
 
 import defrac.intellij.jps.builder.DefracJvmPackageBuildTarget;
+import defrac.intellij.jps.builder.DefracJvmPackageBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jps.builders.BuildTargetType;
 import org.jetbrains.jps.incremental.BuilderService;
 import org.jetbrains.jps.incremental.TargetBuilder;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -32,14 +33,12 @@ public final class DefracBuildService extends BuilderService {
   @NotNull
   @Override
   public List<? extends BuildTargetType<?>> getTargetTypes() {
-    return Arrays.asList(
-        DefracJvmPackageBuildTarget.TargetType.INSTANCE
-    );
+    return Collections.singletonList(DefracJvmPackageBuildTarget.TargetType.INSTANCE);
   }
 
   @NotNull
   @Override
   public List<? extends TargetBuilder<?, ?>> createBuilders() {
-    return super.createBuilders(); //TODO(joa): implement me
+    return Collections.singletonList(new DefracJvmPackageBuilder());
   }
 }

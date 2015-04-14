@@ -71,7 +71,7 @@ public abstract class DefracBuildTarget extends BuildTarget<BuildRootDescriptor>
                                                           final BuildDataPaths dataPaths) {
     final JpsDefracModuleExtension extension = DefracJpsUtil.getExtension(module);
 
-    if(extension == null || !targetType.isSuitablePlatform(extension.getPlatform())) {
+    if(extension == null || extension.isMacroLibrary() || !targetType.isSuitablePlatform(extension.getPlatform())) {
       return Collections.emptyList();
     }
 
