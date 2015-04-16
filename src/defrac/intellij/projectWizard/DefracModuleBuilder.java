@@ -157,12 +157,12 @@ public abstract class DefracModuleBuilder extends ModuleBuilder {
 
   @Override
   public Icon getNodeIcon() {
-    return DefracIcons.DEFRAC;
+    return DefracIcons.Defrac16x16;
   }
 
   @Override
   public Icon getBigIcon() {
-    return DefracIcons.DEFRAC;
+    return DefracIcons.Defrac16x16;
   }
 
   @Override

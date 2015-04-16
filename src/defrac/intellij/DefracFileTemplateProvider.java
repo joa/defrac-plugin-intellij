@@ -42,7 +42,7 @@ public final class DefracFileTemplateProvider implements FileTemplateGroupDescri
 
   @Override
   public FileTemplateGroupDescriptor getFileTemplatesDescriptor() {
-    final FileTemplateGroupDescriptor group = new FileTemplateGroupDescriptor("Defrac", DefracIcons.DEFRAC);
+    final FileTemplateGroupDescriptor group = new FileTemplateGroupDescriptor("Defrac", DefracIcons.Defrac16x16);
     group.addTemplate(new FileTemplateDescriptor(GENERIC_APP, StdFileTypes.JAVA.getIcon()));
     group.addTemplate(new FileTemplateDescriptor(IOS_APP, StdFileTypes.JAVA.getIcon()));
     group.addTemplate(new FileTemplateDescriptor(IOS_APP_DELEGATE, StdFileTypes.JAVA.getIcon()));

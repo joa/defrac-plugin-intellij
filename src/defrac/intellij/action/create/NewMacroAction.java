@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
-package defrac.intellij.config.web;
+package defrac.intellij.action.create;
+
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import defrac.intellij.action.DefracAction;
+import org.jetbrains.annotations.NotNull;
 
 /**
  *
  */
-@SuppressWarnings("unused,MismatchedReadAndWriteOfArray")
-public final class WebPSettings {
-  protected Boolean enabled;
-  protected Integer quality;
-  protected String arguments;
+public class NewMacroAction extends DefracAction {
+  public NewMacroAction() {
+    super(IS_GENERIC);
+  }
+
+  @Override
+  public void actionPerformed(@NotNull final AnActionEvent event) {
+    // TODO: insert action logic here
+  }
 }
