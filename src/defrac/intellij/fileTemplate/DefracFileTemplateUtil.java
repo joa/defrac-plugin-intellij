@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package defrac.intellij.action.create;
+package defrac.intellij.fileTemplate;
 
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.util.Conditions;
-import defrac.intellij.action.DefracAction;
+import defrac.intellij.DefracPlatform;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 /**
  *
  */
-public class NewMacroAction extends DefracAction {
-  public NewMacroAction() {
-    super(Conditions.and(IS_GENERIC, IS_IN_SOURCE));
+public final class DefracFileTemplateUtil {
+  @NotNull @NonNls public static final String PLATFORM_ALL = "PLATFORM_ALL";
+
+  @NotNull
+  public static String getPlatformKey(@NotNull final DefracPlatform platform) {
+    return "PLATFORM_"+platform.name.toUpperCase();
   }
 
-  @Override
-  public void actionPerformed(@NotNull final AnActionEvent event) {
-  }
+  private DefracFileTemplateUtil() {}
 }

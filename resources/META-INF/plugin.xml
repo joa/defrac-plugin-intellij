@@ -75,7 +75,7 @@
                 icon="DefracIcons.ToolWindow"
                 conditionClass="defrac.intellij.toolWindow.DefracToolWindowCondition"
                 factoryClass="defrac.intellij.toolWindow.DefracToolWindowFactory"/>
-    <fileTemplateGroup implementation="defrac.intellij.DefracFileTemplateProvider"/>
+    <fileTemplateGroup implementation="defrac.intellij.fileTemplate.DefracFileTemplateProvider"/>
     <projectTemplatesFactory implementation="defrac.intellij.projectWizard.DefracProjectTemplatesFactory"/>
   </extensions>
 

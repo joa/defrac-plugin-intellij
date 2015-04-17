@@ -16,10 +16,13 @@
 
 package defrac.intellij.action;
 
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.ide.IdeView;
+import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.ProjectFileIndex;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.Condition;
+import com.intellij.psi.PsiDirectory;
 import defrac.intellij.facet.DefracFacet;
 import defrac.intellij.project.DefracProjectUtil;
 import org.jetbrains.annotations.NotNull;
@@ -39,6 +42,14 @@ public abstract class DefracAction extends AnAction {
   };
 
   @NotNull
+  protected static final Condition<AnActionEvent> IS_IN_SOURCE = new Condition<AnActionEvent>() {
+    @Override
+    public boolean value(final AnActionEvent actionEvent) {
+      return isInSourceContent(actionEvent.getDataContext());
+    }
+  };
+
+  @NotNull
   protected static DefracFacet getFacet(@NotNull final AnActionEvent event) {
     return checkNotNull(DefracFacet.getInstance(event));
   }
@@ -52,7 +63,7 @@ public abstract class DefracAction extends AnAction {
 
   @Override
   public final void update(@NotNull final AnActionEvent event) {
-    final Presentation presentation = getTemplatePresentation();
+    final Presentation presentation = event.getPresentation();
 
     if(DefracProjectUtil.isDefracProject(event.getProject()) && DefracFacet.getInstance(event) != null) {
       presentation.setVisible(true);
@@ -72,6 +83,20 @@ public abstract class DefracAction extends AnAction {
 
   protected boolean isActionEnabled(@NotNull final AnActionEvent event) {
     return true;
+  }
+
+  protected static boolean isInSourceContent(@NotNull final DataContext dataContext) {
+    final IdeView ideView = checkNotNull(LangDataKeys.IDE_VIEW.getData(dataContext));
+    final Project project = checkNotNull(PlatformDataKeys.PROJECT.getData(dataContext));
+    final ProjectFileIndex projectFileIndex = ProjectRootManager.getInstance(project).getFileIndex();
+
+    for (PsiDirectory dir : ideView.getDirectories()) {
+      if (projectFileIndex.isInSourceContent(dir.getVirtualFile())) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   protected void doUpdate(@NotNull final AnActionEvent event) {}

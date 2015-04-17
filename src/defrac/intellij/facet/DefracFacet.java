@@ -21,6 +21,7 @@ import com.intellij.facet.FacetManager;
 import com.intellij.facet.FacetTypeId;
 import com.intellij.facet.FacetTypeRegistry;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
@@ -70,8 +71,15 @@ public final class DefracFacet extends Facet<DefracFacetConfiguration> {
   @Contract("null -> null")
   @Nullable
   public static DefracFacet getInstance(@Nullable AnActionEvent event) {
-    return event == null ? null : getInstance(event.getData(LangDataKeys.MODULE));
+    return event == null ? null : getInstance(event.getDataContext());
   }
+
+  @Contract("null -> null")
+  @Nullable
+  public static DefracFacet getInstance(@Nullable DataContext context) {
+    return context == null ? null : getInstance(LangDataKeys.MODULE.getData(context));
+  }
+
 
   @Contract("null -> null")
   @Nullable

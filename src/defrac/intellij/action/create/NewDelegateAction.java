@@ -16,18 +16,49 @@
 
 package defrac.intellij.action.create;
 
+import com.intellij.ide.fileTemplates.FileTemplateManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import defrac.intellij.action.DefracAction;
+import com.intellij.openapi.project.DumbAware;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Conditions;
+import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiFile;
+import defrac.intellij.DefracPlatform;
+import defrac.intellij.action.create.ui.MultiPlatformCreateDialog;
+import defrac.intellij.config.DefracConfig;
+import defrac.intellij.facet.DefracFacet;
+import defrac.intellij.fileTemplate.DefracFileTemplateProvider;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Set;
 
 /**
  *
  */
-public class NewDelegateAction extends DefracAction {
+public class NewDelegateAction extends CreateMultiplatformClassAction<PsiFile> implements DumbAware {
   public NewDelegateAction() {
-    super(IS_GENERIC);
+    super(Conditions.and(IS_GENERIC, IS_IN_SOURCE));
   }
 
-  public void actionPerformed(AnActionEvent event) {
-    // TODO: insert action logic here
+  @NotNull
+  @Override
+  protected MultiPlatformCreateDialog.Creator<PsiFile> createGeneric(@NotNull final AnActionEvent event,
+                                                                      @NotNull final Project project,
+                                                                      @NotNull final DefracFacet facet,
+                                                                      @NotNull final DefracConfig config,
+                                                                      @NotNull final PsiDirectory dir) {
+    return new MultiPlatformCreateDialog.Creator<PsiFile>() {
+      @Nullable
+      @Override
+      public PsiFile createElement(@NotNull final String name,
+                                    @NotNull final DefracPlatform platform,
+                                    @NotNull final Set<DefracPlatform> enabledPlatforms) {
+        return createFileFromTemplate(
+            name,
+            FileTemplateManager.getInstance().getInternalTemplate(DefracFileTemplateProvider.DELEGATE),
+            dir, null, platform, enabledPlatforms);
+      }
+    };
   }
 }
