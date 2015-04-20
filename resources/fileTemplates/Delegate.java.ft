@@ -10,4 +10,7 @@ import defrac.annotation.#if(${PLATFORM_ALL} && ${PLATFORM_ALL} != "")Delegate#{
 #if(${PLATFORM_WEB} && ${PLATFORM_WEB} != "")@DelegateWeb("#if(${PACKAGE_NAME} && ${PACKAGE_NAME} != "")${PACKAGE_NAME}.#{end}Web${NAME}")#end
 #end
 public class ${NAME} {
+  public ${NAME}() {
+
+  }
 }

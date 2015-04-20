@@ -16,49 +16,51 @@
 
 package defrac.intellij.action.create;
 
-import com.intellij.ide.fileTemplates.FileTemplateManager;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.project.DumbAware;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.Conditions;
-import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import defrac.intellij.DefracPlatform;
-import defrac.intellij.action.create.ui.MultiPlatformCreateDialog;
-import defrac.intellij.config.DefracConfig;
 import defrac.intellij.facet.DefracFacet;
 import defrac.intellij.fileTemplate.DefracFileTemplateProvider;
+import defrac.intellij.project.DefracProjectUtil;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Set;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  *
  */
-public class NewDelegateAction extends CreateMultiplatformClassAction<PsiFile> implements DumbAware {
+public class NewDelegateAction extends MultiPlatformCreateAction<PsiFile> {
+  @NotNull
+  private static final PlatformSpecificCreator.ModuleFilter MODULE_FILTER =
+      new PlatformSpecificCreator.ModuleFilter() {
+        @Override
+        public Module[] getModules(@NotNull final Project project, @NotNull final DefracPlatform platform) {
+          return DefracProjectUtil.findModulesForPlatform(project, platform, new Condition<Module>() {
+            @Override
+            public boolean value(final Module module) {
+              return !checkNotNull(DefracFacet.getInstance(module)).isMacroLibrary();
+            }
+          });
+        }
+      };
+
   public NewDelegateAction() {
     super(Conditions.and(IS_GENERIC, IS_IN_SOURCE));
   }
 
   @NotNull
   @Override
-  protected MultiPlatformCreateDialog.Creator<PsiFile> createGeneric(@NotNull final AnActionEvent event,
-                                                                      @NotNull final Project project,
-                                                                      @NotNull final DefracFacet facet,
-                                                                      @NotNull final DefracConfig config,
-                                                                      @NotNull final PsiDirectory dir) {
-    return new MultiPlatformCreateDialog.Creator<PsiFile>() {
-      @Nullable
-      @Override
-      public PsiFile createElement(@NotNull final String name,
-                                    @NotNull final DefracPlatform platform,
-                                    @NotNull final Set<DefracPlatform> enabledPlatforms) {
-        return createFileFromTemplate(
-            name,
-            FileTemplateManager.getInstance().getInternalTemplate(DefracFileTemplateProvider.DELEGATE),
-            dir, null, platform, enabledPlatforms);
-      }
-    };
+  protected Creator<PsiFile> createGeneric() {
+    return new TemplateBasedCreator(DefracFileTemplateProvider.DELEGATE);
+  }
+
+  @NotNull
+  @Override
+  protected Creator<PsiFile> creatorForPlatform(@NotNull final DefracPlatform platform) {
+    return new PlatformSpecificCreator<PsiFile>(
+        new TemplateBasedCreator(DefracFileTemplateProvider.DELEGATE_IMPLEMENTATION), MODULE_FILTER);
   }
 }
